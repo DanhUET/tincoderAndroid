@@ -13,6 +13,7 @@ import com.example.tincoderapplication.R
 class MusicSongActivity : AppCompatActivity() {
     private var btnStartMusic: Button? = null
     private var btnStopMusic: Button? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -28,10 +29,11 @@ class MusicSongActivity : AppCompatActivity() {
 
     fun startMusic() {
         btnStartMusic = findViewById(R.id.btnStart)
-        val newSong= Song(R.drawable.img_tulaunuocmat,"Mr Siro","Tự lau nươc mắt",R.raw.y1nvt)
+        val newSong = Song(R.drawable.img_tulaunuocmat, "Mr Siro", "Tự lau nươc mắt", R.raw.y1nvt)
         btnStartMusic?.setOnClickListener {
             val intent = Intent(this, MyService::class.java)
-            intent.putExtra("newSong",newSong)
+            intent.putExtra("newSong", newSong)
+
             startService(intent)
         }
     }
