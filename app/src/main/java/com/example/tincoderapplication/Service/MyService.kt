@@ -17,27 +17,41 @@ import com.example.tincoderapplication.R
 import com.example.tincoderapplication.Service.MyApplication.Companion.CHANNEL_ID
 
 class MyService : Service() {
-    private var mediaPlayer: MediaPlayer?=null
+    private var mediaPlayer: MediaPlayer? = null
     override fun onBind(intent: Intent): IBinder {
         TODO("Return the communication channel to the service.")
     }
 
     @SuppressLint("ForegroundServiceType")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        sendNotificationMusic(intent)
+        val newSong = intent?.getSerializableExtra("newSong") as Song
+        startMusic(newSong)
+        sendNotificationMusic(newSong)
         return START_NOT_STICKY
     }
 
-    private fun sendNotificationMusic(intent: Intent?) {
-        val newSong=intent?.getSerializableExtra("newSong") as Song
-        val bitmap= BitmapFactory.decodeResource(resources, newSong.imgSong)
-        val notificationLayout = RemoteViews(packageName, R.layout.custom_music_song)
-        notificationLayout.setImageViewBitmap(R.id.img_song,bitmap)
-        notificationLayout.setTextViewText(R.id.singer,newSong.titleSinger)
-        notificationLayout.setTextViewText(R.id.titleSong,newSong.titleSong)
-        val pendingIntent= PendingIntent.getActivity(this,0, intent, PendingIntent.FLAG_IMMUTABLE)
-        mediaPlayer = MediaPlayer.create(applicationContext, newSong.resource);
+    private fun startMusic(newSong: Song) {
+        if (mediaPlayer == null) {
+            mediaPlayer = MediaPlayer.create(applicationContext, newSong.resource);
+
+        }
         mediaPlayer?.start();
+
+    }
+
+    private fun sendNotificationMusic(newSong: Song) {
+        val bitmap = BitmapFactory.decodeResource(resources, newSong.imgSong)
+        val notificationLayout = RemoteViews(packageName, R.layout.custom_music_song)
+        notificationLayout.setImageViewBitmap(R.id.img_song, bitmap)
+        notificationLayout.setTextViewText(R.id.singer, newSong.titleSinger)
+        notificationLayout.setTextViewText(R.id.titleSong, newSong.titleSong)
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            0,
+            Intent(this, MusicSongActivity::class.java),
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.mark_unread_chat_alt_24px)
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
@@ -45,16 +59,18 @@ class MyService : Service() {
             .setContentIntent(pendingIntent)
             .build()
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            startForeground(1,notification)
+            startForeground(1, notification)
         } else {
-            startForeground(1, notification,
-                FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
+            startForeground(
+                1, notification,
+                FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
+            )
         }
     }
 
     override fun onDestroy() {
-            super.onDestroy()
-        mediaPlayer?.stop();
+        super.onDestroy()
         mediaPlayer?.release();
+        mediaPlayer=null
     }
 }

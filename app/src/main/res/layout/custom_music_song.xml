@@ -35,6 +35,7 @@
             />
     </LinearLayout>
     <ImageView
+        android:id="@+id/playOrPauseMusic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/pause_circle_24px"
@@ -43,6 +44,7 @@
         android:layout_marginStart="20dp"
         />
     <ImageView
+        android:id="@+id/clearMusic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/close_24px"
